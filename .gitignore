@@ -1,2 +1,4 @@
 data/
+processed_images/
+__pycache__/
 .venv/

@@ -1,6 +1,8 @@
 import pandas as pd
 from pvlib.location import lookup_altitude
 
+pd.options.mode.chained_assignment = None   # Disable slice warning
+
 class CSVLoader():
     """Loads in the data from specified file paths and preprocesses it
     """
@@ -10,12 +12,14 @@ class CSVLoader():
         """
         if train is not None:
             self.train = pd.read_csv(train)
-            print(f":: Training data  with shape {self.train.shape} read in")
+            print(f":: [CSV] Training data  with shape {self.train.shape} read in")
+        else:
+            print(":: [CSV] No training data read in")
         if test is not None:
             self.test = pd.read_csv(test)
-            print(f":: Test data with shape {self.train.shape} read in")
+            print(f":: [CSV] Test data with shape {self.train.shape} read in")
         else:
-            print(":: No test data read in")
+            print(":: [CSV] No test data read in")
 
 
     def _drop_cols(self, col_list=["geoUncertaintyInM", "areaInM2",
