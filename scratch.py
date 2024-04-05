@@ -1,6 +1,6 @@
 import sys
 
-from dataloader import DataLoader
+from datamanagement.dataloader import DataLoader
 
 # Run the data loader with system arguments:
 # --read        or  -r  :   Read in the data     

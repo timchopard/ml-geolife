@@ -1,7 +1,7 @@
 import pandas as pd
 from pvlib.location import lookup_altitude
 
-class DataLoader():
+class CSVLoader():
     """Loads in the data from specified file paths and preprocesses it
     """
 
@@ -55,3 +55,4 @@ class DataLoader():
         self.train['loc_str'] = self.train.apply(
             lambda x: str(x['lat']) + ',' + str(x['lon']), axis=1)
         return self.train.drop_duplicates(subset="loc_str")
+
