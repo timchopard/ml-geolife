@@ -10,6 +10,7 @@ def process(loc):
         os.mkdir(loc)
     except FileExistsError:
         pass
+
     arg_vals = [True, False]
     data = DataLoader(train=PATH_TRAIN, test=PATH_TEST)
     for value_data in arg_vals:
@@ -29,6 +30,8 @@ def main():
     if args[0] == '-c':
         save_loc = args[1]
         if save_loc[-1] != '/': save_loc += '/'
+
+    # Confirm with user that save directory is correct
     print(f"Save directory is:    {save_loc}")
     confirmation = input("Is this correct? (y/n):\t")
     while True:

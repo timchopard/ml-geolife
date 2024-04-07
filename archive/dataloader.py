@@ -35,7 +35,23 @@ class DataLoader(CSVLoader, ImageLoader):
         np.savez(f"images_as_arrays_{color_type}", data_unique_id.to_numpy())
         
         
-    def images_to_numpy(self, is_train: bool = True, is_rgb: bool = True, path=""):
+    def images_to_numpy(self, is_train: bool = True, is_rgb: bool = True, 
+                        path: str = "", compress: bool = True) -> str:
+        """Converts images to numpy arrays and saves them as files based on 
+        color space (RGB or NIR) and data purpose (training or test)
+
+        args:
+            is_train    boolean :   True for processing training data false for
+                                    test data
+            is_rgv      boolean :   True for processing RGB images, false for 
+                                    NIR images
+            path        string  :   The directory path to save in
+            compress    bool    :   True to compress the images in the .npz file
+                                    false to save uncompressed
+
+        return:
+                        string  :   The filepath to the saved .npz
+        """
         data = self.train if is_train else self.test
         if data is None:
             Exception(f":: [ERROR] The {'training' if is_train else 'test'} data was not correctly loaded")
@@ -55,5 +71,9 @@ class DataLoader(CSVLoader, ImageLoader):
         data_unique_id.drop(columns=to_drop, axis=1)
 
         save_location = f"{path}{data_type}_images_as_arrays_{color_type}"
-        np.savez(save_location, data_unique_id.to_numpy())
+        if compress:
+            np.savez_compressed(save_location, data_unique_id.to_numpy())
+        else:
+            np.savez(save_location, data_unique_id.to_numpy())
+
         return save_location
