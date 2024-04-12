@@ -4,6 +4,10 @@ models/
 processed_images/
 processed_data/
 .venv/
+darren/
+
+# Raw data
+geolifeclef-2024.zip
 
 # Python
 __pycache__/

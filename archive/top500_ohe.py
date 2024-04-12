@@ -1,5 +1,4 @@
 
-import tensorflow as tf
 import numpy as np
 import pandas as pd
 from sklearn.preprocessing import OneHotEncoder
@@ -19,7 +18,7 @@ transformed = ohe.fit_transform(top500_df[['region', 'speciesId']])
 
 top500_df[np.concatenate((ohe.categories_[0], ohe.categories_[1]), axis=0)] = transformed.toarray()
 
-top500_df_grouped = top500_df.groupby('surveyId').max().copy()
+top500_df_grouped = top500_df.groupby('surveyId', as_index=False).max().copy()
 
 print(top500_df_grouped.shape)
 
