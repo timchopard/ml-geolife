@@ -20,7 +20,6 @@ print("Processing data\n")
 # Load data
 print("Load data")
 train_df = pd.read_csv("data/GLC24_PA_metadata_train.csv")
-test_df = pd.read_csv("data/GLC24_PA_metadata_test.csv")
 
 # Drop: 'Andorra', 'Hungary', 'Ireland', 'Latvia', 'Luxembourg', 'Monaco', 'Norway',
 # 'Portugal', 'Romania', 'Serbia', 'The former Yugoslav Republic of Macedonia' they
@@ -174,5 +173,5 @@ print(" - Copy images")
 for survey_id in tqdm(train_df.surveyId):
     shutil.copy(
         f"processed_data/train_images/{survey_id}.png",
-        f"processed_data/top500-train_images/{survey_id}.jpg",
+        f"processed_data/top500-train_images/{survey_id}.png",
     )
