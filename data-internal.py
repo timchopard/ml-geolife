@@ -8,18 +8,16 @@
 # - All tabular data in one file
 
 import pandas as pd
-import numpy as np
-import os
-from PIL import Image
-from tqdm import tqdm
 import shutil
+from tqdm import tqdm
+from pathlib import Path
 
 
 print("Processing data\n")
 
 # Load data
 print("Load data")
-train_df = pd.read_pickle("processed_data/top500-train/top500-train.pkl")
+train_df = pd.read_pickle("processed_data/top500/train.pkl")
 
 internal_train_df = train_df.sample(frac=0.8, random_state=113)
 internal_test_df = train_df.drop(internal_train_df.index)
@@ -29,27 +27,23 @@ print(f"{internal_test_df.shape=}")
 
 print("Export internal training data")
 print(" - Make directory")
-if not os.path.exists("processed_data/internal"):
-    os.makedirs("processed_data/internal")
-if not os.path.exists("processed_data/internal/train_images"):
-    os.makedirs("processed_data/internal/train_images")
+Path("processed_data/internal/train_images").mkdir(parents=True, exist_ok=True)
 
 print(" - Export tabular data")
-internal_train_df.to_pickle("processed_data/internal/internal_train.pkl")
+internal_train_df.to_pickle("processed_data/internal/train.pkl")
 
 internal_train_df.head()
 
 print(" - Copying over images")
 for survey_id in tqdm(internal_train_df.surveyId):
     shutil.copy(
-        f"processed_data/top500-train/top500-train_images/{survey_id}.png",
+        f"processed_data/top500/train_images/{survey_id}.png",
         f"processed_data/internal/train_images/{survey_id}.png",
     )
 
 print("Make test data")
 print(" - Make directory")
-if not os.path.exists("processed_data/internal/test_images"):
-    os.makedirs("processed_data/internal/test_images")
+Path("processed_data/internal/test_images").mkdir(parents=True, exist_ok=True)
 
 print("Split data")
 internal_test_X_df = internal_test_df.loc[
@@ -62,12 +56,12 @@ internal_test_y_df = internal_test_df.loc[:, species_columns]
 
 print("Save data")
 print(" - test data")
-internal_test_X_df.to_pickle("processed_data/internal/internal_test_X.pkl")
+internal_test_X_df.to_pickle("processed_data/internal/test_X.pkl")
 
 print(" - Copying over images")
 for survey_id in tqdm(internal_test_df.surveyId):
     shutil.copy(
-        f"processed_data/top500-train/top500-train_images/{survey_id}.png",
+        f"processed_data/top500/train_images/{survey_id}.png",
         f"processed_data/internal/test_images/{survey_id}.png",
     )
 

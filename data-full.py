@@ -9,17 +9,16 @@
 
 import pandas as pd
 import numpy as np
-import os
 from PIL import Image
 from tqdm import tqdm
-import shutil
-
+from pathlib import Path
 
 print("Processing data\n")
 
 # Load data
 print("Load data")
 train_df = pd.read_csv("data/GLC24_PA_metadata_train.csv")
+test_df = pd.read_csv("data/GLC24_PA_metadata_test.csv")
 
 # Drop: 'Andorra', 'Hungary', 'Ireland', 'Latvia', 'Luxembourg', 'Monaco', 'Norway',
 # 'Portugal', 'Romania', 'Serbia', 'The former Yugoslav Republic of Macedonia' they
@@ -40,38 +39,12 @@ drop_countries = {
 }
 train_df = train_df[~train_df.country.isin(drop_countries)]
 
-# drop species outside top 500
-print("Drop species outside top 500")
-species = train_df.speciesId.value_counts().head(500).index
-train_df = train_df[train_df.speciesId.isin(species)]
-
-# -inf, inf replaced by NaN
-print("Replace -inf, inf with NaN")
-train_df = train_df.replace([np.inf, -np.inf], np.nan)
-test_df = test_df.replace([np.inf, -np.inf], np.nan)
-
-# For the train data NaN in geoUncertaintyInM, and areaInM2 replaced with the country median values
-print("Process NaN values")
-for column in ["areaInM2", "geoUncertaintyInM"]:
-    print(f" - Processing train data: {column}")
-    for country in tqdm(train_df.country.unique()):
-        train_df.loc[train_df.country == country, column] = train_df.query(
-            f"country == '{country}'"
-        )[column].fillna(train_df.query(f"country == '{country}'")[column].median())
-
-# For the test data NaN in geoUncertaintyInM, and areaInM2 replaced with the training data country
-# median values (note this is data leakage, but I believe it is tolerable)
-for column in ["areaInM2", "geoUncertaintyInM"]:
-    print(f" - Processing test data: {column}")
-    for country in test_df.country.unique():
-        test_df.loc[test_df.country == country, column] = test_df.query(
-            f"country == '{country}'"
-        )[column].fillna(train_df.query(f"country == '{country}'")[column].median())
-
-# Resulting dataframes
-print("Resulting dataframes")
-print(f" - Train data: {train_df.shape}")
-print(f" - Test data: {test_df.shape}")
+print("Drop regions not in test data")
+drop_regions = {
+    "BLACK SEA",
+    "PANNONIAN",
+}
+test_df = test_df[~test_df.region.isin(drop_regions)]
 
 # set speciesId as int
 print("Set speciesId as int")
@@ -108,6 +81,36 @@ print(f" - Test data: {test_df.shape}")
 
 # Handle missing data
 print("Handle missing data")
+
+
+# -inf, inf replaced by NaN
+print(" - Replace -inf, inf with NaN")
+train_df = train_df.replace([np.inf, -np.inf], np.nan)
+test_df = test_df.replace([np.inf, -np.inf], np.nan)
+
+# For the train data NaN in geoUncertaintyInM, and areaInM2 replaced with the country median values
+print(" - Process NaN values")
+for column in ["areaInM2", "geoUncertaintyInM"]:
+    print(f"   - Processing train data: {column}")
+    for country in tqdm(train_df.country.unique()):
+        train_df.loc[train_df.country == country, column] = train_df.query(
+            f"country == '{country}'"
+        )[column].fillna(train_df.query(f"country == '{country}'")[column].median())
+
+# For the test data NaN in geoUncertaintyInM, and areaInM2 replaced with the training data country
+# median values (note this is data leakage, but I believe it is tolerable)
+for column in ["areaInM2", "geoUncertaintyInM"]:
+    print(f"   - Processing test data: {column}")
+    for country in test_df.country.unique():
+        test_df.loc[test_df.country == country, column] = test_df.query(
+            f"country == '{country}'"
+        )[column].fillna(train_df.query(f"country == '{country}'")[column].median())
+
+# Resulting dataframes
+print(" - Resulting dataframes")
+print(f"   - Train data: {train_df.shape}")
+print(f"   - Test data: {test_df.shape}")
+
 for column in list(
     train_df.isna().sum()[train_df.isna().sum() > 0].sort_values(ascending=False).keys()
 ):
@@ -149,6 +152,17 @@ for column in ["country", "region", "speciesId"]:
     )
     train_df = train_df.drop(columns=[column])
 
+# for test data country and region one-hot encoded
+print("One-hot encode country and region in test data")
+for column in ["country", "region"]:
+    print(f" - Processing: {column}")
+    test_df = pd.concat(
+        [test_df, pd.get_dummies(test_df[column], prefix=column)],
+        axis=1,
+    )
+    test_df = test_df.drop(columns=[column])
+
+
 # Grouped by surveyId, use max
 print("Group by surveyId")
 train_df = train_df.groupby("surveyId", as_index=False).max()
@@ -156,22 +170,33 @@ train_df = train_df.groupby("surveyId", as_index=False).max()
 # Resulting dataframes
 print("Resulting dataframes")
 print(f" - Train data: {train_df.shape}")
+print(f" - Test data: {test_df.shape}")
+
+# Create directories
+print("Create directories")
+Path("processed_data/full/train_images").mkdir(parents=True, exist_ok=True)
+Path("processed_data/full/test_images").mkdir(parents=True, exist_ok=True)
 
 # Save data
 print("Saving data tabular data")
-train_df.to_pickle("processed_data/top500-train.pkl")
+train_df.to_pickle("processed_data/full/train.pkl")
+test_df.to_pickle("processed_data/full/test.pkl")
 
 
 # process images
 print("Processing images")
-print(" - Create image directories")
-if not os.path.exists("processed_data/top500-train_images"):
-    os.makedirs("processed_data/top500-train_images")
-
-# copy images to directories
-print(" - Copy images")
-for survey_id in tqdm(train_df.surveyId):
-    shutil.copy(
-        f"processed_data/train_images/{survey_id}.png",
-        f"processed_data/top500-train_images/{survey_id}.png",
-    )
+print(" - Convert images to 4 channels")
+dfs = [(train_df, "train"), (test_df, "test")]
+for df, set_type in dfs:
+    print(f"   - Processing {set_type} images")
+    for survey_id in tqdm(df.surveyId):
+        cd = str(survey_id)[-4:-2]
+        ab = str(survey_id)[-2:]
+        rgb = Image.open(
+            f"data/PA_{set_type.capitalize()}_SatellitePatches_RGB/pa_{set_type}_patches_rgb/{ab}/{cd}/{survey_id}.jpeg"
+        )
+        nir = Image.open(
+            f"data/PA_{set_type.capitalize()}_SatellitePatches_NIR/pa_{set_type}_patches_nir/{ab}/{cd}/{survey_id}.jpeg"
+        ).convert("L")
+        rgb.putalpha(nir)
+        rgb.save(f"processed_data/full/{set_type}_images/{survey_id}.png")
