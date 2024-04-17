@@ -2,6 +2,7 @@
 
 1. [Data](#data)
    1. [Preprocessor](#preprocessor)
+      1. [General Structure](#general-structure)  
       1. [Preprocessor Class](#preprocessor-class)
       1. [Image Preprocessor Class](#imagepreprocessor-class)
    1. [Postprocessor](#postprocessor)
@@ -16,6 +17,19 @@
 
 [kaggle page](https://www.kaggle.com/competitions/geolifeclef-2024)
 
+### General Structure
+
+#### Country
+
+Some of the countries have very few entries (~50 out of 1.5e6) and as such can be subsumed by adjacent countries
+
+#### Region
+
+The regions correlate to the map of Biogeographic regions below.
+
+![Biogeographic Regions of Europe](regions.png "Biogeographic Regions of Europe. Source: https://en.wikipedia.org/wiki/Steppic_Biogeographic_Region#/media/File:Europe_biogeography_countries_en.svg")
+
+Since some of these regions are also underrepresented in the data, some larger regions have absorbed others.
 
 ### Preprocessor  
 
