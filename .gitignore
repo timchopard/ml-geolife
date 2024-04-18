@@ -5,6 +5,7 @@ processed_images/
 processed_data/
 .venv/
 darren/
+archive/
 
 # Raw data
 geolifeclef-2024.zip
@@ -18,6 +19,7 @@ __pycache__/
 *.jpg
 *.csv
 *.npz
+*.pkl
 
 
 ### LaTeX ignores:
