@@ -18,6 +18,7 @@ __pycache__/
 *.jpg
 *.csv
 *.npz
+*.pkl
 
 
 ### LaTeX ignores:
