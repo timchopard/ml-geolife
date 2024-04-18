@@ -1,10 +1,12 @@
 import pandas as pd
 import numpy as np
 
+# TODO: Possibly just remove
+
 class Postprocessor():
 
 
-    def __init__(self, symbiosis_path:str = "symbiosis.csv") -> None:
+    def __init__(self, symbiosis_path:str = "bayes_symbiosis.csv") -> None:
         """Reads in the symbiote data from the provided path. Loads the top
         500 species from the raw CSV PA data.
 
@@ -26,7 +28,6 @@ class Postprocessor():
         reduced = reduced[reduced["parent"].isin(self.top_500)]
         reduced = reduced[~reduced["child"].isin(self.top_500)]
 
-        bayes
 
 
 
