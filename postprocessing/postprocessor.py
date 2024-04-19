@@ -8,20 +8,23 @@ in the root directory.
     - Performs f1 score on the data
     - Formats submission and saves it to the 'submissions' directory
 """
-
 import os
 import re
 from datetime import datetime
+
 import numpy as np
 import pandas as pd
-
 from sklearn.metrics import f1_score
 
-class Postprocessor():
-    """
-    """
+from .exceptions import MissingDataError, ShapeError
 
-    def __init__(self, predictions, labels, pred_cols = None, 
+class Postprocessor():
+    """Performs post processing operations on the raw prediction data generated
+    by a model. Also provides an f1 score when labels are available.
+    """
+    f1 = None   # Placeholder for the f1 score
+
+    def __init__(self, predictions, labels = None, pred_cols = None,
                  pred_indices = None, **kwargs) -> None:
         """
         Converts the predictions to a DataFrame and parses kwargs
@@ -43,16 +46,19 @@ class Postprocessor():
             uploadable      :   True if the predictions are from the kaggle
                                 test data
         """
-        if predictions.shape[0] != labels.shape[0]:
-            Exception(":: [ERROR] Predictions and labels must have an equal "  \
-                      "number of rows."
-            )
+        self.uploadable = (
+            "uploadable" in kwargs and kwargs.pop("uploadable")
+        )
+
+        if not self.uploadable and predictions.shape[0] != labels.shape[0]:
+            raise ShapeError()
         self.labels = labels
         self.predictions = predictions
-        if type(predictions) is np.ndarray: 
-            self.__preds_to_df(pred_cols, pred_indices)
+        if isinstance(predictions, np.ndarray):
+            self.__preds_to_df(list(pred_cols), list(pred_indices))
 
         self.__normalise_columns()
+
         self.__parse_kwargs(**kwargs)
 
 
@@ -77,8 +83,8 @@ class Postprocessor():
 
         # Get f1 score
         self.f1 = f1_score(self.predictions, self.labels, average='micro')
-        
-        if "print" in kwargs and kwargs.pop("print") == True:
+
+        if "print" in kwargs and kwargs.pop("print"):
             print(f":: [F1] {self.f1:.3f}")
 
     def save_predictions(self, model_type:str = None) -> None:
@@ -95,18 +101,21 @@ class Postprocessor():
         if not os.path.exists(dir_path):
             os.mkdir(dir_path)
 
-        # Create a filename based on the model type 
+        # Create a filename based on the model type
         # and the current date and time
-        filename = str(datetime.now()).replace(' ', '_')
-        filename = f"{filename.replace(':', '-', 1).split(':')[0]}.csv"
-        if model_type is not None: filename = f"{model_type}_{filename}"
-        if self.uploadable: filename = f"uploadable_{filename}"
-        
-        # Format the final output and save it to a .csv file 
+        filename = str(datetime.now()).replace(' ', '_').replace(':', '-', 1)
+        filename = f"{filename.rsplit(':', maxsplit=1)[0]}.csv"
+        if model_type is not None:
+            filename = f"{model_type}_{filename}"
+        if self.uploadable:
+            filename = f"uploadable_{filename}"
+
+        # Format the final output and save it to a .csv file
         self.__format_submission().to_csv(
             os.path.join(
-                dir_path, filename 
+                dir_path, filename
         ), index=False)
+        print(f":: [SAVED] {filename}")
 
     def __format_submission(self) -> pd.DataFrame:
         """Formats the predictions dataframe for submitting. 
@@ -119,9 +128,9 @@ class Postprocessor():
         for _, row in self.predictions.iterrows():
             row_string = ""
             for truth, value in zip(row, self.predictions.columns):
-                if truth: row_string += str(value) + " "
+                row_string += str(value) + " " if truth else ""
             output_list.append(row_string)
-        
+
         return pd.DataFrame({
             "surveyId"      :   self.predictions.index,
             "predictions"   :   output_list
@@ -139,7 +148,8 @@ class Postprocessor():
         """
         cols = {}
         for col in dataframe.columns:
-            cols[col] = re.findall(r'\d+', col)[0] if type(col) is str else col
+            cols[col] = re.findall(r'\d+', col)[0] if isinstance(col, str)  \
+                                                   else col
         return cols
 
     def __preds_to_df(self, columns, indices):
@@ -149,21 +159,10 @@ class Postprocessor():
             columns         :   The column names (speciesId)
             indices         :   The index names (surveyId)
         """
-        if type(columns) is not list or type(indices) is not list:
-            col_section = ":: Missing pred_cols argument.\n" \
-                        + "-\tPlease pass a list of column values. These could"\
-                        + " be taken from the pd.DataFrame.columns value of"   \
-                        + " the training labels.\n"
-            idx_section = ":: Missing pred_indices argument.\n"                \
-                        + "-\tPlease pass a list of index values. These could" \
-                        + " be taken from the pd.DataFrame.index value of the" \
-                        + " test input data\n"
-            Exception(
-                col_section if type(columns) is not list else "" +
-                idx_section if type(indices) is not list else ""
-            )
+        if not isinstance(columns, list) or not isinstance(indices, list):
+            raise MissingDataError(columns=columns, indices=indices)
         self.predictions = pd.DataFrame(
-            self.predictions, 
+            self.predictions,
             columns=columns,
             index=indices
         )
@@ -172,25 +171,22 @@ class Postprocessor():
         """Uses the __format_columns helper function to rename all columns as 
         only the speciesId values without prefixes or suffixes
         """
-        self.labels = self.labels.rename(
-            columns=self.__format_columns(self.labels)
-        )
         self.predictions = self.predictions.rename(
             columns=self.__format_columns(self.predictions)
         )
-        
+        if self.labels is not None:
+            self.labels = self.labels.rename(
+                columns=self.__format_columns(self.labels)
+            )
+
     def __parse_kwargs(self, **kwargs):
         """Helper function
         Parses key word arguments for the initialiser
         """
         model = kwargs.pop("model_type") if "model_type" in kwargs else None
-        
-        self.uploadable = (
-            "uploadable" in kwargs and kwargs.pop("uploadable") == True 
-        ) 
 
-        if "f1" in kwargs and kwargs.pop("f1") == True:
+        if "f1" in kwargs and kwargs.pop("f1"):
             self.f1_score(print=True)
 
-        if "save" in kwargs and kwargs.pop("save") == True:
+        if "save" in kwargs and kwargs.pop("save"):
             self.save_predictions(model)
