@@ -22,7 +22,7 @@ class Postprocessor():
     """Performs post processing operations on the raw prediction data generated
     by a model. Also provides an f1 score when labels are available.
     """
-    f1 = None   # Placeholder for the f1 score
+    f1_score = None   # Placeholder for the f1 score
 
     def __init__(self, predictions, labels = None, pred_cols = None,
                  pred_indices = None, **kwargs) -> None:
@@ -62,7 +62,7 @@ class Postprocessor():
         self.__parse_kwargs(**kwargs)
 
 
-    def f1_score(self, **kwargs) -> np.float64:
+    def get_f1_score(self, **kwargs) -> np.float64:
         """Formats the predictions dataframe so that it matches the labels 
         dataframe in structure then calculates and prints the f1 score to three
         decimal places. Stores the untruncated value as a member variable.
@@ -82,10 +82,12 @@ class Postprocessor():
         self.predictions = self.predictions.reindex(columns=self.labels.columns)
 
         # Get f1 score
-        self.f1 = f1_score(self.predictions, self.labels, average='micro')
+        self.f1_score = f1_score(
+            self.predictions, self.labels, average='micro'
+        )
 
         if "print" in kwargs and kwargs.pop("print"):
-            print(f":: [F1] {self.f1:.3f}")
+            print(f":: [F1] {self.f1_score:.3f}")
 
     def save_predictions(self, model_type:str = None) -> None:
         """Creates a submissions directory if none exists. Saves the formatted
@@ -186,7 +188,7 @@ class Postprocessor():
         model = kwargs.pop("model_type") if "model_type" in kwargs else None
 
         if "f1" in kwargs and kwargs.pop("f1"):
-            self.f1_score(print=True)
+            self.get_f1_score(print=True)
 
         if "save" in kwargs and kwargs.pop("save"):
             self.save_predictions(model)
