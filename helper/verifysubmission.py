@@ -36,4 +36,10 @@ def verify_submission(filename:str,
             print(f":: ID {prediction_id} in predictions but not in sample")
             correct_ids = False
 
-    return correct_ids
+    true_cols = ["surveyId", "predictions"]
+    gen_cols  = list(generated_submission.columns)
+    correct_cols = true_cols[0] == gen_cols[0] and true_cols[1] == gen_cols[1]
+    if not correct_cols:
+        print(f":: Column names should be {true_cols}, not {gen_cols}")
+
+    return correct_ids and correct_cols
