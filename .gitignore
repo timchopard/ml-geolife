@@ -6,6 +6,7 @@ processed_data/
 .venv/
 darren/
 archive/
+submissions/
 
 # Raw data
 geolifeclef-2024.zip
@@ -20,6 +21,9 @@ __pycache__/
 *.csv
 *.npz
 *.pkl
+
+# Scratch files
+sratchpad*
 
 
 ### LaTeX ignores:
