@@ -26,4 +26,4 @@ def verify_test(dataframe:pd.DataFrame,
     if len(message) > 0:
         print(message)
 
-    return len(only_in_orig) + len(only_in_proc) == 0
+    return len(only_in_orig) + len(only_in_proc) == 0 and correct_cols
