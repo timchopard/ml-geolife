@@ -70,7 +70,7 @@ Running `python imageprocessor.py -d` from the root will convert train and test 
 
 The predictions are scored using the F1 metric. 
 
-$\text{F1 Score} = \frac{\text{TP}{\text{TP}+\frac{1}{2}(\text{FP}+\text{FN}}$
+$\text{F1 Score} = \frac{\text{TP}}{\text{TP}+\frac{1}{2}(\text{FP}+\text{FN}}$
 
 ## Structure
 
