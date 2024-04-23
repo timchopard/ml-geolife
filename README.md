@@ -1,12 +1,12 @@
 # GeoLifeCLEF 2024
 
 1. [Data](#data)
-   1. [Preprocessor](#preprocessor)
-      1. [General Structure](#general-structure)  
-      1. [Preprocessor Class](#preprocessor-class)
-      1. [Image Preprocessor Class](#imagepreprocessor-class)
+   1. [General Structure](#general-structure)  
+  <!--    1. [Preprocessor Class](#preprocessor-class)
+      1. [Image Preprocessor Class](#imagepreprocessor-class)-->
    1. [Postprocessor](#postprocessor)
    <!-- 1. [Images as numpy](#images-as-numpy-arrays) -->
+1, [Scoring](#scoring)
 1. [Structure](#structure)
 1. [Potential Experiment](#potential-experiments)
    1. [Data](#data)
@@ -31,6 +31,7 @@ The regions correlate to the map of Biogeographic regions below.
 
 Since some of these regions are also underrepresented in the data, some larger regions have absorbed others.
 
+<!--
 ### Preprocessor  
 
 #### ```Preprocessor``` Class
@@ -47,6 +48,7 @@ TODO: Currently this leaves the test data with too few columns for some models, 
 #### ```ImagePreprocessor``` Class
 
 The image preprocessor is also found in ```./preprocessor.py```. This class loads in the raw images and combines them into four channel (Red, Green, Blue, Infrared) images stored as numpy arrays.
+-->
 
 ### Postprocessor
 
@@ -63,6 +65,12 @@ The first two load the training and test CSV files and their associated images. 
 <!-- ### Images as numpy arrays
 
 Running `python imageprocessor.py -d` from the root will convert train and test images into four `.npz` files located in a new directory (`processed_images/`) unless otherwise specified. -->
+
+## Scoring
+
+The predictions are scored using the F1 metric. 
+
+$\text{F1 Score} = \frac{\text{TP}{\text{TP}+\frac{1}{2}(\text{FP}+\text{FN}}$
 
 ## Structure
 
