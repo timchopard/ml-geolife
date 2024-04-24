@@ -1,4 +1,6 @@
 #!/usr/bin/env python
+"""Downloads and preprocesses the kaggle data
+"""
 
 from pipeline.getdata import DirectoryManagement
 from pipeline.preprocess import DataCollector
