@@ -1,10 +1,19 @@
+""" from pipeline.preprocess import PCACreator, PCAApplier
+"""
 import os
 import pickle as pk
 import pandas as pd
+from warnings import simplefilter
 from numpy import float32, float64, inf, nan
-from sklearn.preprocessing import scale 
+from sklearn.preprocessing import scale
+
+# Hide irrelevant "performance wanrning" from pandas library 
+simplefilter(action="ignore", category=pd.errors.PerformanceWarning)
 
 class PCAGeneric():
+    """ Generic class providing methods and variables to PCACreator and 
+    PCAApplier classes
+    """
 
     rw_path = "models/pca"
 
@@ -37,6 +46,9 @@ class PCAGeneric():
     ]
 
     def apply_human_footprint(self):
+        """Applies the PCA model for human footprint, combining several 
+        columns and deleting the originals
+        """
         pca = self._load("pca_hf")
         self.data["HumanFootprintGeneric"] = pca.transform(
             self.data[self.high_cov_hf_cols]
@@ -44,6 +56,9 @@ class PCAGeneric():
         self.data.drop(columns=self.high_cov_hf_cols, inplace=True)
 
     def apply_rainfalls(self):
+        """Applies the PCA model for rainfall and temperature, combining several 
+        columns and deleting the originals
+        """
         self._process_rainfall(
             self.__apply_rainfall_helper,
             self.tas_prefixes
@@ -54,6 +69,13 @@ class PCAGeneric():
         )
 
     def _process_rainfall(self, action, prefixes):
+        """ Loops through the months and years surveyed to pass column names
+        to the relevant function
+
+        args:
+            action          :   The function to apply to each set of columns
+            prefixes        :   The column name prefixes to focus on
+        """
         for month in range(1, 13):
             combination_cols = []
             for year in range(2000, 2019):
@@ -66,16 +88,24 @@ class PCAGeneric():
             action(combination_cols, filename)
 
     def _remove_nan(self):
+        """ Removes NaN values from the data, replacing them with the median
+        values for their respective columns.
+        """
         self.data.replace([inf, -inf], nan, inplace=True)
         self.data = self.data.fillna(self.data.median())
 
     def _load(self, filename):
+        """ Loads in a stored PCA model
+        """
         return pk.load(
             open(os.path.join(self.rw_path, filename + ".pkl"), 'rb')
-        )        
-        # TODO: add try/except           
+        )
+        # TODO: add try/except
 
     def _reduce_size(self):
+        """ Reduces the float64 values to float32 and drops unneeded columns to
+        reduce the memory usage
+        """
         mask = (self.data.dtypes == float64).tolist()
         for col, is_masked in zip(self.data.columns, mask):
             if is_masked:
@@ -85,12 +115,15 @@ class PCAGeneric():
                 self.data.drop(columns=col, inplace=True)
 
     def __apply_rainfall_helper(self, col_names, filename):
+        """ Helper function for apply_rainfall. Loads in PCA models and applies
+        them to the relevant columns, deletes the original columns
+        """
         pca = self._load(filename)
         self.data[filename] = pca.transform(self.data[col_names])
         self.data.drop(columns=col_names, inplace=True)
 
 class PCACreator(PCAGeneric):
-    from sklearn.decomposition import PCA 
+    from sklearn.decomposition import PCA
 
     def __init__(self, path=None, **kwargs) -> None:
         path = "data/processed/train_full.pkl" if path is None else path
@@ -105,11 +138,11 @@ class PCACreator(PCAGeneric):
 
     def rainfalls(self):
         self._process_rainfall(
-            self.__combine_rainfall_helper, 
+            self.__combine_rainfall_helper,
             self.tas_prefixes
         )
         self._process_rainfall(
-            self.__combine_rainfall_helper, 
+            self.__combine_rainfall_helper,
             self.pr_prefix
         )
         self.apply_rainfalls()
@@ -141,7 +174,7 @@ class PCACreator(PCAGeneric):
     def __save(self, filename, model):
         self.__build_filepath()
         pk.dump(
-            model, 
+            model,
             open(os.path.join(self.rw_path, filename + ".pkl"), "wb")
         )
 
@@ -176,4 +209,3 @@ class PCAApplier(PCAGeneric):
         self.data[new_cols] = False
         if self.data.shape[1] == len(true_cols):
             self.data = self.data[true_cols]
-                

@@ -57,7 +57,7 @@ class XGBPipeline():
         self.model = load_model(self.model_type, model_name)
         print(f":: Loading {model_name} as species count model")
         self.count_model = load_model(self.model_type, count_name)
-        self.column_labels = load_model(self.model_type, f"{count_name}_cols")
+        self.column_labels = load_model(self.model_type, f"{model_name}_cols")
 
 
     def run(self, additional_count: int = None):
@@ -75,7 +75,7 @@ class XGBPipeline():
         test = PCAApplier(method='full').data
 
         liklihoods = self.model.predict(test)
-        occurences = self.count_model.predict(test).round.astype(int)          \
+        occurences = self.count_model.predict(test).round().astype(int)          \
                    + additional_count
 
         Postprocessor(
@@ -118,7 +118,10 @@ if __name__ == "__main__":
             print("No model present, run with either \'--train\' or \'--load\'"\
                 + " as well as the \'--run\' flag")
             sys.exit(0)
-        pos = args.index("--run")
-        count = None if not len(args) > pos and args[pos + 1].isnumeric()      \
-                else int(args[pos + 1])
+
+        pos = args.index("--run") 
+        count = None
+        if len(args) > pos + 1 and args[pos + 1].isnumeric():
+            count = int(args[pos + 1])
+
         pipeline.run(count)
