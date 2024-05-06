@@ -2,10 +2,10 @@
 """Downloads and preprocesses the kaggle data
 """
 import sys
-
 from pipeline.getdata import DirectoryManagement
-from pipeline.preprocess import DataCollector
+from pipeline.preprocess import pickle_landsat
 from pipeline.preprocess import PCACreator
+from pipeline.preprocess import DataCollector
 
 if __name__ == "__main__":
     args = sys.argv
@@ -18,6 +18,8 @@ if __name__ == "__main__":
     if "-d" in args:
         DirectoryManagement()
     if "-p" in args:
-        DataCollector.process_and_save_data()
+        DataCollector().process_and_save_data()
     if "-r" in args:
         PCACreator(method="full")
+    if "-l" in args:
+        pickle_landsat()

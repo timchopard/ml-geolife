@@ -2,6 +2,10 @@ import numpy as np
 import pandas as pd
 import pickle as pk
 
+from .pca import PCAApplier 
+
+TRAIN_IDS = PCAApplier("train", method="full", from_year=2010).data.index
+TRAIN_IDS = TRAIN_IDS.to_list()
 COLORS = ["red", "green", "blue", "nir", "swir1", "swir2"]
 
 def get_path(is_train, color):
@@ -11,13 +15,15 @@ def get_path(is_train, color):
     return path 
 
 def pickle_landsat():
-    for truth in [True, False]:
+    for truth in [True, False,]:
         image_data = None 
         for c_idx, color in enumerate(COLORS):
+            print(f":: [{'TRAIN' if truth else 'TEST'}] -- {color}")
             path = get_path(truth, color)
             data = pd.read_csv(path)
             if image_data is None:
-                image_data = np.zeros((data.shape[0], 60, 6))
+                axis_0 = len(TRAIN_IDS) if truth else data.shape[0]
+                image_data = np.zeros((axis_0, 60, 6), np.uint8)
             cols = data.columns.to_list()
             cols.reverse()
             data = data[cols]
@@ -26,7 +32,11 @@ def pickle_landsat():
                 axis=1
             )
             data.reset_index()
-            for idx, row in data.iterrows():
+            idx = 0
+            for _, row in data.iterrows():
+                if truth and row["surveyId"] not in TRAIN_IDS: 
+                    continue
+                
                 for modifier in range(0, 15):
                     for quarter in range(1, 5):
                         image_data[
@@ -34,6 +44,7 @@ def pickle_landsat():
                         ] = np.uint8(
                             row[f"{int(row['from'][:4]) + modifier}_{quarter}"]
                         )
+                idx += 1
         save_path = f"data/processed/full_{'train' if truth else 'test'}"
         save_path += "_landsat.pkl"
         pk.dump(image_data, open(save_path, "wb"))
