@@ -45,6 +45,14 @@ class PCAGeneric():
         "Bio-pr_",
     ]
 
+    def __init__(self, path, **kwargs):
+        path = os.path.join("data/processed", path + "_full.pkl")
+        self.data = pd.read_pickle(path)
+        if "from_year" in kwargs:
+            self.from_year = kwargs.pop("from_year")
+            self.__drop_years()
+        
+
     def apply_human_footprint(self):
         """Applies the PCA model for human footprint, combining several 
         columns and deleting the originals
@@ -78,7 +86,7 @@ class PCAGeneric():
         """
         for month in range(1, 13):
             combination_cols = []
-            for year in range(2000, 2019):
+            for year in range(self.from_year, 2019):
                 suffix = f"{'0' if month < 10 else ''}{month}_{year}"
                 for name in prefixes:
                     combination_cols.append(f"{name}{suffix}")
@@ -122,12 +130,19 @@ class PCAGeneric():
         self.data[filename] = pca.transform(self.data[col_names])
         self.data.drop(columns=col_names, inplace=True)
 
+    def __drop_years(self):
+        for year in range(2000, self.from_year):
+            self.data = self.data[
+                [col for col in self.data if '_' + str(year) not in col        \
+                 or "species" in col]
+            ]
+
+
 class PCACreator(PCAGeneric):
     from sklearn.decomposition import PCA
 
     def __init__(self, path=None, **kwargs) -> None:
-        path = "data/processed/train_full.pkl" if path is None else path
-        self.data = pd.read_pickle(path)
+        super().__init__(path, **kwargs)
         self.__kwarg_handler(**kwargs)
 
     def human_footprint(self):
@@ -187,10 +202,10 @@ class PCACreator(PCAGeneric):
 class PCAApplier(PCAGeneric):
 
     def __init__(self, path=None, **kwargs):
-        path = "data/processed/test_full.pkl" if path is None else path
-        self.data = pd.read_pickle(path)
+        super().__init__(path, **kwargs)
         self.__kwarg_handler(**kwargs)
-
+        self.xx_cols = [col for col in self.data if "species" not in col]
+        self.yy_cols = [col for col in self.data if "species" in col]
 
     def __kwarg_handler(self, **kwargs):
         if "method" in kwargs:
@@ -198,6 +213,8 @@ class PCAApplier(PCAGeneric):
 
             if method in ["full",]:
                 self._remove_nan()
+
+            if method in ["full", "notnan"]:
                 self._reduce_size()
                 self.apply_human_footprint()
                 self.apply_rainfalls()
