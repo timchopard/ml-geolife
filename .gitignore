@@ -7,6 +7,7 @@ processed_data/
 darren/
 archive/
 submissions/
+.vscode/
 
 # Raw data
 geolifeclef-2024.zip
