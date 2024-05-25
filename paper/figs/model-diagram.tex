@@ -4,10 +4,12 @@
 \tikzstyle{xgbbox} = [rectangle, rounded corners=0.5mm, minimum width=35mm, minimum height=10mm, text centered, draw=customorange, fill=customorange!30, text=fontcolor]
 \tikzstyle{pcabox} = [rectangle, rounded corners=2mm, minimum width=20mm, minimum height=7mm, text centered, draw=customorange!70, fill=customorange!10, text=fontcolor!70]
 \tikzstyle{databox} = [rectangle, minimum width=40mm, minimum height=12mm, text centered, draw=red!70, fill=red!10, text=fontcolor!70]
-\tikzstyle{convnode} = [ellipse, minimum width=5mm, minimum height=5mm, fill=customteal!40, draw=customteal!80]
+\tikzstyle{convnode} = [rectangle, rounded corners=3mm, minimum width=6mm, minimum height=6mm, fill=customteal!40, draw=customteal!80]
+\tikzstyle{output} = [rectangle, minimum width=30mm, minimum height=10mm, fill=blue!20, draw=blue!50]
 \tikzstyle{sarrowxgb} = [->, thick, draw=customorange!70]
 \tikzstyle{sarrownn} = [->, thick, draw=customteal!70]
 \tikzstyle{sarrowtr} = [->, thick, draw=customgreen!70]
+\tikzstyle{sarrowout} = [->, thick, draw=blue!50]
 
 
 \begin{tikzpicture}
@@ -55,5 +57,11 @@
 \draw[sarrowtr] (landsat.east) .. controls +(right:25mm) and +(left:20mm) .. (transformer.west);
 \draw[sarrowtr] (metadata.east) .. controls +(right:25mm) and +(left:20mm) .. (transformer.west);
 \draw[sarrowtr] (sentinel.east) .. controls +(right:25mm) and +(left:20mm) .. (transformer.west);
+
+% Output
+\node (output) [output, right of=transformer, xshift=30mm, yshift=-15mm] {Output};
+\draw[sarrowout] (xgb.east) .. controls +(right:25mm) and +(north:50mm) .. (output.north);
+\draw[sarrowout] (conv.east) .. controls +(right:5mm) and +(north:20mm) .. (output.north);
+\draw[sarrowout] (transformer.east) .. controls +(right:15mm) and +(north:10mm) .. (output.north);
 
 \end{tikzpicture}
