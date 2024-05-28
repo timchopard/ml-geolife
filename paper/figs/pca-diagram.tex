@@ -1,0 +1,45 @@
+\tikzstyle{databox} = [parentbox, minimum width=40mm, minimum height=12mm, text centered, draw=red!70, fill=red!10, text=fontcolor!70]
+\tikzstyle{pcabox} = [parentbox, minimum width=20mm, minimum height=7mm, text centered, draw=customorange!70, fill=customorange!10, text=fontcolor!70]
+\tikzstyle{sarrowxgb} = [parentarrow, draw=customorange!70]
+\tikzstyle{outbox} = [parentbox, minimum width=40mm, minimum height=12mm, text centered, draw=blue!70, fill=blue!10, text=fontcolor!70]
+\tikzstyle{sarrowout} = [parentarrow, draw=blue!50]
+
+
+\begin{tikzpicture}
+
+    
+% Data
+\node (bioclim) [databox] {Bioclimatic Rasters};
+% \node (landsat) [databox, below of=bioclim, yshift=-7mm] {LandSat};
+\node (metadata) [databox, below of=bioclim, yshift=-7mm] {Metadata};
+% \node (sentinel) [databox, below of=metadata, yshift=-7mm] {Sentinel};
+    
+
+% PCAs
+\node (pca0) [pcabox, right of=bioclim, xshift=30mm, yshift=15mm] {PCA$_0$}; 
+\node (pca1) [pcabox, below of=pca0] {PCA$_1$}; 
+\node (vertellipsis0) [below of=pca1, yshift=3mm] {\Large{\textcolor{fontcolor!70}{$\cdot$}}};
+\node (vertellipsis1) [below of=vertellipsis0, yshift=9mm] {\Large{\textcolor{fontcolor!70}{$\cdot$}}};
+\node (vertellipsis2) [below of=vertellipsis1, yshift=9mm] {\Large{\textcolor{fontcolor!70}{$\cdot$}}};
+\node (pca2) [pcabox, below of=vertellipsis2, yshift=3mm] {PCA$_n$}; 
+\draw[sarrowxgb] (bioclim.east) .. controls +(right:5mm) and +(left:8mm) .. (pca0.west);
+\draw[sarrowxgb] (bioclim.east) .. controls +(right:5mm) and +(left:8mm) .. (pca1.west);
+\draw[sarrowxgb] (bioclim.east) .. controls +(right:5mm) and +(left:8mm) .. (pca2.west);
+
+\node (output) [outbox, right of=pca1, xshift=40mm, yshift=-15mm] {Processed Data};
+
+\draw[sarrowout] (pca0.east) .. controls +(right:5mm) and +(left:8mm) .. (output.west);
+\draw[sarrowout] (pca1.east) .. controls +(right:5mm) and +(left:8mm) .. (output.west);
+\draw[sarrowout] (pca2.east) .. controls +(right:5mm) and +(left:8mm) .. (output.west);
+\draw[sarrowout] (metadata.east) .. controls +(right:60mm) and +(left:10mm) .. (output.west);
+
+
+% \node (baseens) [baseens, right of=bioclim, yshift=-43mm, xshift=40mm] {Score Ensemble};
+% \draw[sarrowxgb] (bioclim.east) .. controls +(right:5mm) and +(left:8mm) .. (baseens.west);
+% \draw[sarrowxgb] (landsat.east) .. controls +(right:5mm) and +(left:8mm) .. (baseens.west);
+% \draw[sarrowxgb] (metadata.east) .. controls +(right:5mm) and +(left:8mm) .. (baseens.west);
+% \draw[sarrowxgb] (sentinel.east) .. controls +(right:5mm) and +(left:8mm) .. (baseens.west);
+
+
+
+\end{tikzpicture} 
