@@ -1,12 +1,12 @@
 % Tikz shape definitions
-\tikzstyle{parentbox} = [] % TODO
-\tikzstyle{nnbox} = [rectangle, rounded corners=0.5mm, minimum width=35mm, minimum height=10mm, text centered, draw=customteal, fill=customteal!30, text=fontcolor]
-\tikzstyle{transformerbox} = [rectangle, rounded corners=0.5mm, minimum width=35mm, minimum height=10mm, text centered, draw=customgreen, fill=customgreen!30, text=fontcolor]
-\tikzstyle{xgbbox} = [rectangle, rounded corners=0.5mm, minimum width=35mm, minimum height=10mm, text centered, draw=customorange, fill=customorange!30, text=fontcolor]
-\tikzstyle{pcabox} = [rectangle, rounded corners=2mm, minimum width=20mm, minimum height=7mm, text centered, draw=customorange!70, fill=customorange!10, text=fontcolor!70]
-\tikzstyle{databox} = [rectangle, minimum width=40mm, minimum height=12mm, text centered, draw=red!70, fill=red!10, text=fontcolor!70]
+\tikzstyle{parentbox} = [rectangle, rounded corners=1mm] % TODO
+\tikzstyle{nnbox} = [parentbox, minimum width=35mm, minimum height=10mm, text centered, draw=customteal, fill=customteal!30, text=fontcolor]
+\tikzstyle{transformerbox} = [parentbox, minimum width=35mm, minimum height=10mm, text centered, draw=customgreen, fill=customgreen!30, text=fontcolor]
+\tikzstyle{xgbbox} = [parentbox, minimum width=35mm, minimum height=10mm, text centered, draw=customorange, fill=customorange!30, text=fontcolor]
+\tikzstyle{pcabox} = [parentbox, minimum width=20mm, minimum height=7mm, text centered, draw=customorange!70, fill=customorange!10, text=fontcolor!70]
+\tikzstyle{databox} = [parentbox, minimum width=40mm, minimum height=12mm, text centered, draw=red!70, fill=red!10, text=fontcolor!70]
 \tikzstyle{convnode} = [rectangle, rounded corners=3mm, minimum width=6mm, minimum height=6mm, fill=customteal!40, draw=customteal!80]
-\tikzstyle{output} = [rectangle, minimum width=30mm, minimum height=10mm, fill=blue!20, draw=blue!50]
+\tikzstyle{output} = [parentbox, minimum width=30mm, minimum height=10mm, fill=blue!20, draw=blue!50]
 
 % Arrows
 \tikzstyle{parentarrow} = [-stealth, line width=0.5mm]
@@ -68,4 +68,4 @@
 \draw[sarrowout] (conv.east) .. controls +(right:5mm) and +(north:20mm) .. (output.north);
 \draw[sarrowout] (transformer.east) .. controls +(right:15mm) and +(north:10mm) .. (output.north);
 
-\end{tikzpicture}
+\end{tikzpicture} 
