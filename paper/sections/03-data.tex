@@ -1,22 +1,29 @@
 \section{Data}
 
 
-Dataset Description
-
 The training data comprises species observations and environmental data. Below, we explain the data in detail.
+
+\subsection{Observations data}
 
 The species related training data comprises:
 
 Presence-Absence (PA) surveys: including around 90 thousand surveys with roughly 10,000 species of the European flora. The presence-absence data (PA) is provided to compensate for the problem of false-absences of PO data and calibrate models to avoid associated biases.
+
 Presence-Only (PO) occurrences: combines around five million observations from numerous datasets gathered from the Global Biodiversity Information Facility (GBIF, www.gbif.org). This data constitutes the larger piece of the training data and covers all countries of our study area, but it has been sampled opportunistically (without standardized sampling protocol), leading to various sampling biases. The local absence of a species among PO data doesn't mean it is truly absent. An observer might not have reported it because it was difficult to "see" it at this time of the year, to identify it as not a monitoring target, or just unattractive.
 
-Environmental data
+\subsection{Environmental data}
 
 Besides species data, we provide spatialized geographic and environmental data as additional input variables (see Figure 1). More precisely, For each species observation location, we provide:
 
+\subsubsection{Satellite image patches}
+
 Satellite image patches: 3-band (RGB) and 1-band (NIR) 128x128 JPEG images, a color JPEG file for RGB data and a grayscale one for Near-Infrared images at 10m resolution. The source for these images is Sentinel2 remote sensing data pre-processed by the Ecodatacube platform.
 
+\subsubsection{Satellite time series}
+
 Satellite time series: Up to 20 years of values for six satellite bands (R, G, B, NIR, SWIR1, and SWIR2). Each observation is associated with the time series of the satellite median point values over each season since the winter of 1999 for six satellite bands (R, G, B, NIR, SWIR1, and SWIR2). This data carries a high-resolution local signature of the past 20 years' succession of seasonal vegetation changes, potential extreme natural events (fires), or land use changes. The original satellite data has a resolution of 30m per pixel. The source for this is the Landsat remote sensing data pre-processed by the Ecodatacube platform
+
+\subsubsection{Environmental rasters}
 
 Environmental rasters Various climatic, pedologic, land use, and human footprint variables at the European scale. We provide scalar values, time-series, and original rasters from which you may extract local 2D images.
 
@@ -24,12 +31,10 @@ Four climatic variables computed monthly (mean, minimum and maximum temperature,
 
 Environmental rasters, for each observation, we were provided additional environmental data such as GeoTIFF rasters and scalar values already extracted from the rasters. We provide CSV files, one per band raster type, i.e., Climate, Elevation, Human Footprint, LandCover, and SoilGrids.
 
-Bioclimatic rasters: 19 low-resolution rasters covering Europe; commonly used in species distribution modeling. Provided in longitude/latitude coordinates (WGS84). These were provided as GeoTIFF files with compression and CSV file with extracted values, with a resolution of 30 arcsec (~ 1 kilometer). The source for these rasters is the CHELSA climate dataset.
-
-Soil rasters: Nine pedologic low-resolution rasters covering Europe. Provided variables describe the soil properties from 5 to 15cm depth and are determinant of plant species distributions. Check the definition.txt file about the provided variables (e.g., pH, clay, organic carbon and nitrogen contents, etc.). The format is GeoTIFF files with compression and CSV file with extracted values, with a resolution of ~1 kilometer. The source for these rasters is Soilgrids.
-
-Elevation: High-resolution raster covering Europe. Provided as a GeoTIFF file and CSV file with extracted values, with a resolution of 1 arc second (~30 meters). The source for this raster is the ASTER Global Digital Elevation Model V3.
-
-Land Cover: A medium-resolution multi-band land cover raster covering Europe. Each band describes either the land cover class prediction or its confidence under various classifications. We recommend the use of IGBP (17 classes) or LCCS (43 classes) layers, often used in species distribution modeling. The format is GeoTIFF file with compression and CSV file with extracted values, with a resolution of ~500 meters. The source for this raster is MODIS Terra+Aqua 500m.
-
-Human footprint: Several low-resolution rasters describing human footprint, encapsulating seven pressures on the environment (e.g., nighlight level, population density) induced by human presence and activity, are provided for two time periods, the early 90's (~1993) and late 2000' (~2009). We provide two summary rasters combining all human pressures and two detailed rasters per pressure, which avoid an arbitrary degradation of the original data. The format is GeoTIFF files with compression and CSV file with extracted values, with a resolution of ~1 kilometer. The source for these rasters is \cite{human-footprint-dataset-2016}.
+\begin{enumerate}
+    \item Bioclimatic rasters: 19 low-resolution rasters covering Europe; commonly used in species distribution modeling. Provided in longitude/latitude coordinates (WGS84). These were provided as GeoTIFF files with compression and CSV file with extracted values, with a resolution of 30 arcsec (~ 1 kilometer). The source for these rasters is the CHELSA climate dataset.
+    \item Soil rasters: Nine pedologic low-resolution rasters covering Europe. Provided variables describe the soil properties from 5 to 15cm depth and are determinant of plant species distributions. Check the definition.txt file about the provided variables (e.g., pH, clay, organic carbon and nitrogen contents, etc.). The format is GeoTIFF files with compression and CSV file with extracted values, with a resolution of ~1 kilometer. The source for these rasters is Soilgrids.
+    \item Elevation: High-resolution raster covering Europe. Provided as a GeoTIFF file and CSV file with extracted values, with a resolution of 1 arc second (~30 meters). The source for this raster is the ASTER Global Digital Elevation Model V3.
+    \item Land Cover: A medium-resolution multi-band land cover raster covering Europe. Each band describes either the land cover class prediction or its confidence under various classifications. We recommend the use of IGBP (17 classes) or LCCS (43 classes) layers, often used in species distribution modeling. The format is GeoTIFF file with compression and CSV file with extracted values, with a resolution of ~500 meters. The source for this raster is MODIS Terra+Aqua 500m.
+    \item Human footprint: Several low-resolution rasters describing human footprint, encapsulating seven pressures on the environment (e.g., nighlight level, population density) induced by human presence and activity, are provided for two time periods, the early 90's (~1993) and late 2000' (~2009). We provide two summary rasters combining all human pressures and two detailed rasters per pressure, which avoid an arbitrary degradation of the original data. The format is GeoTIFF files with compression and CSV file with extracted values, with a resolution of ~1 kilometer. The source for these rasters is \cite{human-footprint-dataset-2016}.
+\end{enumerate}
