@@ -10,13 +10,48 @@ This section details the individual architectures and the methods used to combin
 The core architectures used in this project were 18 layer ResNet, XGBoost and [TRANSFORMER]. The outputs of these were 
 then weighted and combined before the maximum arguments were selected.
 
+\subsubsection{Principal Component Analysis}
+Principal Component Analysis (PCA) is a method for reducing dimensionality 
+
 \subsubsection{XGBoost}
-XGBoost is an open source gradient tree boosting package \cite{xgboost}. For this research we used the xgbregression model It has shown broad success on a number of 
-\subsubsection{[Resnet]}
+XGBoost is an open source gradient tree boosting package~\cite{xgboost}. 
+For this research we used the xgbregression model It has shown broad success accross a range of tasks, performing on par with or better than most equivalent and Automated Machine learning approaches~\cite{xgbcomp}.
+\subsubsection{ResNet}
+ResNet (Residual Network) is an architecture for deep neural networks that speeds up the training process through the use of residual connections~\cite{resnet}. 
+For the purposes of this research we focused on ResNet18, the 18 layer deep variation with some modifications to accomodate the shape of the input data and the required output. 
 \subsubsection{[Transformer]}
 
 \subsection{Process}
+
+\newcommand{\nspecies}{N_{\text{species}}}
+
+There were two key steps to the process of species selection. First the core models which generated pseudo-probabilities and were then weighted and combined. 
+Second separeate models were used to determine the expected number $(\nspecies)$ of species per survey. 
+These steps came together with the expected counts being used to select the top  $\nspecies$ psuedo-probabilities per survey.
+
 \subsubsection{Species scoring}
+\begin{figure}
+    \begin{center}
+        \input{figs/model-diagram.tex}
+        \caption{The structure of the scoring ensemble from data through to individual species score outputs.}
+    \end{center}\label{fig:score-structure}
+\end{figure}
 \subsubsection{Species counts}
+\begin{figure}
+    \begin{center}
+        \input{figs/count-diagram.tex}
+        \caption{The counts ensemble through to final outputs.}
+    \end{center}\label{fig:count-structure}
+\end{figure}
 \subsection{Metrics}
 
+\newcommand{\fp}{\text{FP}}
+\newcommand{\fn}{\text{FN}}
+\newcommand{\tp}{\text{FP}}
+
+The main scoring metric used was the micro-averaged F1 score as shown in equation \ref{eq:mf1} which is calculated from the precision $\frac{\tp}{\tp + \fp}$ and the recall $\frac{\tp}{\tp + \fn}$ for each individual class $i$. 
+Where $\tp$ is the true positives, $\fp$ is the false positives and $\fn$ is the false negatives.
+
+\begin{equation}\label{eq:mf1}
+    \text{F1}_{micro} = \frac{1}{N}\sum_{i=1}^N\frac{2 \cdot \tp_i}{2 \cdot \tp_i + \fp_i + \fn_i}
+\end{equation}
