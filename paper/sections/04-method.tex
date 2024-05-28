@@ -25,27 +25,38 @@ For the purposes of this research we focused on ResNet18, the 18 layer deep vari
 
 \subsection{Process}
 
+\subsubsection{Preprocessing}
+\begin{figure}\label{fig:preproc}
+    \begin{center}
+        \input{figs/pca-diagram.tex}
+        \caption{Preprocessing the data for use in the count prediction and XGBoost pseudo-probability models}
+    \end{center}
+\end{figure}
+
+
+
+\subsubsection{Main Process}
 \newcommand{\nspecies}{N_{\text{species}}}
 
 There were two key steps to the process of species selection. First the core models which generated pseudo-probabilities and were then weighted and combined. 
 Second separeate models were used to determine the expected number $(\nspecies)$ of species per survey. 
 These steps came together with the expected counts being used to select the top  $\nspecies$ psuedo-probabilities per survey.
 
-\subsubsection{Species scoring}
-\begin{figure}
-    \begin{center}
-        \input{figs/model-diagram.tex}
-        \caption{The structure of the scoring ensemble from data through to individual species score outputs.}
-    \end{center}\label{fig:score-structure}
-\end{figure}
-\subsubsection{Species counts}
-\begin{figure}
-    \begin{center}
-        \input{figs/count-diagram.tex}
-        \caption{The counts ensemble through to final outputs.}
-    \end{center}\label{fig:count-structure}
-\end{figure}
-\subsection{Metrics}
+% \subsubsection{Species scoring}
+% \begin{figure}
+%     \begin{center}
+%         \input{figs/model-diagram.tex}
+%         \caption{The structure of the scoring ensemble from data through to individual species score outputs.}
+%     \end{center}\label{fig:score-structure}
+% \end{figure}
+% \subsubsection{Species counts}
+% \begin{figure}
+%     \begin{center}
+%         \input{figs/count-diagram.tex}
+%         \caption{The counts ensemble through to final outputs.}
+%     \end{center}\label{fig:count-structure}
+% \end{figure}
+% \subsection{Metrics}
 
 \newcommand{\fp}{\text{FP}}
 \newcommand{\fn}{\text{FN}}
