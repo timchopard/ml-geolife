@@ -2,7 +2,7 @@
 \tikzstyle{pcabox} = [parentbox, minimum width=20mm, minimum height=7mm, text centered, draw=customorange!70, fill=customorange!10, text=fontcolor!70]
 \tikzstyle{sarrowxgb} = [parentarrow, draw=customorange!70]
 \tikzstyle{outbox} = [parentbox, minimum width=40mm, minimum height=12mm, text centered, draw=blue!70, fill=blue!10, text=fontcolor!70]
-\tikzstyle{sarrowout} = [parentarrow, draw=blue!50]
+\tikzstyle{sarrowout} = [parentarrow, draw=blue!40]
 
 
 \begin{tikzpicture}
@@ -26,7 +26,7 @@
 \draw[sarrowxgb] (bioclim.east) .. controls +(right:5mm) and +(left:8mm) .. (pca1.west);
 \draw[sarrowxgb] (bioclim.east) .. controls +(right:5mm) and +(left:8mm) .. (pca2.west);
 
-\node (output) [outbox, right of=pca1, xshift=40mm, yshift=-15mm] {Processed Data};
+\node (output) [outbox, right of=pca2, xshift=40mm, yshift=-0mm] {Processed Data};
 
 \draw[sarrowout] (pca0.east) .. controls +(right:5mm) and +(left:8mm) .. (output.west);
 \draw[sarrowout] (pca1.east) .. controls +(right:5mm) and +(left:8mm) .. (output.west);
