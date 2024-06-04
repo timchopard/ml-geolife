@@ -1,11 +1,11 @@
 \section{Method}
 
-In order to manage the multilabel classification required for this research we implemented an ensemble approach. 
+In order to manage the multilabel classification required for this research we implemented an ensemble approach.
 This section details the individual architectures and the methods used to combine them.
 
 \subsection{Architectures}
 
-The core architectures used in this project were 18 layer ResNet, XGBoost and [TRANSFORMER]. The outputs of these were 
+The core architectures used in this project were 18 layer ResNet, XGBoost and [TRANSFORMER]. The outputs of these were
 then weighted and combined before the maximum arguments were selected.
 
 \subsubsection{Principal Component Analysis}
@@ -14,12 +14,15 @@ Principal Component Analysis (PCA) is a method for reducing dimensionality~\cite
 
 
 \subsubsection{XGBoost}
-XGBoost is an open source gradient tree boosting package~\cite{xgboost}. 
+XGBoost is an open source gradient tree boosting package~\cite{xgboost}.
 For this research we used the xgbregression model It has shown broad success accross a range of tasks, performing on par with or better than most equivalent and Automated Machine learning approaches~\cite{xgbcomp}.
 \subsubsection{ResNet}
-ResNet (Residual Network) is an architecture for deep neural networks that speeds up the training process through the use of residual connections~\cite{resnet}. 
-For the purposes of this research we focused on ResNet18, the 18 layer deep variation with some modifications to accomodate the shape of the input data and the required output. 
-\subsubsection{[Transformer]}
+ResNet (Residual Network) is an architecture for deep neural networks that speeds up the training process through the use of residual connections~\cite{resnet}.
+For the purposes of this research we focused on ResNet18, the 18 layer deep variation with some modifications to accomodate the shape of the input data and the required output.
+\subsubsection{Transformer}
+Vision transformers (ViTs) have emerged as a novel approach to image classification, often outperforming traditional convolutional neural networks (CNNs) by leveraging self-attention mechanisms originally developed for machine translation \cite{vaswani2017attention}. Transformer now underpin some of the most powerful Large Language models \cite{brown2020language}. By tokenizing images into fixed-size patches and encoding them into embeddings for transformer layers to process, ViTs excel at capturing long-range dependencies within an image, enabling a more holistic interpretation of visual context compared to CNN's local focus \cite{dosovitskiy2021image}. This methodological shift allows the models to effectively decipher complex scenes and interactions that are typically challenging for traditional architectures.
+
+Often ViT-based models are often developed for large high resolution imagery. This was not the case for this application where the satellite images were a modest 128x128 pixels. We believed that the ability of transformer based models to capture to intricate regional relationships. Would be beneficial to the task of species classification.
 
 \subsection{Process}
 
@@ -49,8 +52,8 @@ This reduction served to remove several edge cases and focus the models more on 
 \subsubsection{Main Process}
 \newcommand{\nspecies}{N_{\text{species}}}
 
-There were two key steps to the process of species selection. First the core models which generated pseudo-probabilities and were then weighted and combined. 
-Second separeate models were used to determine the expected number $(\nspecies)$ of species per survey. 
+There were two key steps to the process of species selection. First the core models which generated pseudo-probabilities and were then weighted and combined.
+Second separeate models were used to determine the expected number $(\nspecies)$ of species per survey.
 These steps came together with the expected counts being used to select the top  $\nspecies$ psuedo-probabilities per survey.
 
 % \subsubsection{Species scoring}
@@ -73,7 +76,7 @@ These steps came together with the expected counts being used to select the top 
 \newcommand{\fn}{\text{FN}}
 \newcommand{\tp}{\text{FP}}
 
-The main scoring metric used was the micro-averaged F1 score as shown in equation \ref{eq:mf1} which is calculated from the precision $\frac{\tp}{\tp + \fp}$ and the recall $\frac{\tp}{\tp + \fn}$ for each individual class $i$. 
+The main scoring metric used was the micro-averaged F1 score as shown in equation \ref{eq:mf1} which is calculated from the precision $\frac{\tp}{\tp + \fp}$ and the recall $\frac{\tp}{\tp + \fn}$ for each individual class $i$.
 Where $\tp$ is the true positives, $\fp$ is the false positives and $\fn$ is the false negatives.
 
 \begin{equation}\label{eq:mf1}
