@@ -42,7 +42,7 @@ def pickle_landsat():
                             row[f"{int(row['from'][:4]) + modifier}_{quarter}"]
                         )
                 idx += 1
-        save_path = f"data/processed/full_{'train' if truth else 'test'}"
+        save_path = f"data/processed/{'train' if truth else 'test'}"
         save_path += "_ls.pkl"
         pk.dump(image_data, open(save_path, "wb"))
 
