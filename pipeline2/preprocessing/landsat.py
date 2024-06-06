@@ -2,8 +2,6 @@ import numpy as np
 import pandas as pd
 import pickle as pk
 
-TRAIN_IDS = pk.load(open("data/processed/train.pkl", "rb")).index
-TRAIN_IDS = TRAIN_IDS.to_list()
 COLORS = ["red", "green", "blue", "nir", "swir1", "swir2"]
 
 def get_path(is_train, color):
@@ -12,14 +10,15 @@ def get_path(is_train, color):
     path += f"-landsat_time_series-{color}.csv"
     return path 
 
-def pickle_landsat():
+def pickle_landsat(metadata_train):
+    train_ids = metadata_train.index.to_list()
     for truth in [True, False,]:
         image_data = None 
         for c_idx, color in enumerate(COLORS):
             path = get_path(truth, color)
             data = pd.read_csv(path)
             if image_data is None:
-                axis_0 = len(TRAIN_IDS) if truth else data.shape[0]
+                axis_0 = len(train_ids) if truth else data.shape[0]
                 image_data = np.zeros((axis_0, 60, 6), np.uint8)
             cols = data.columns.to_list()
             cols.reverse()
@@ -31,7 +30,7 @@ def pickle_landsat():
             data.reset_index()
             idx = 0
             for _, row in data.iterrows():
-                if truth and row["surveyId"] not in TRAIN_IDS: 
+                if truth and row["surveyId"] not in train_ids: 
                     continue
                 
                 for modifier in range(0, 15):
@@ -45,7 +44,3 @@ def pickle_landsat():
         save_path = f"data/processed/{'train' if truth else 'test'}"
         save_path += "_ls.pkl"
         pk.dump(image_data, open(save_path, "wb"))
-
-
-if __name__ == "__main__":
-    pickle_landsat()
