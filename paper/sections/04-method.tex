@@ -1,5 +1,3 @@
-\clearpage  % TODO comment this out when finished
-
 \section{Method}
 
 In order to manage the multilabel classification required for this research we implemented an ensemble approach.
@@ -30,6 +28,17 @@ Often ViT-based models are often developed for large high resolution imagery. Th
 
 \subsubsection{Preprocessing}
 
+The raw data included some missing, or infinite values that needed to be processed prior to model fitting. When a column was both deemed important to model fitting and contained such values, these values were replaced by the mean so as to avoid excessive influence from outliers without overly effecting the shape of the data~\cite{missingmedian}.
+
+\textbf{TODO: Further explanation when models finalized}
+
+The Metadata and Bioclimatic Rasters were preprocessed for use in the count and XGBoost models in order to both reduce dimensionality and remove potential noise.
+
+
+
+
+In addition, the number of viable output species was reduced from 11255 (the total species present accross all data) down to 1141 (the total species with more than 100 occurrences in the presence/absence data). 
+This reduction served to remove several edge cases and focus the models more on likelier species.
 
 \begin{figure}\label{fig:preproc}
     \begin{center}
