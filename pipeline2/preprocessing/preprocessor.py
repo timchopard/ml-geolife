@@ -40,7 +40,6 @@ class GeoLifePreprocessor():
             "EnvironmentalRasters"
         )
 
-
     def process_data(self) -> None: 
         """ Loads in and processes the data for both test and train datasets
         """
@@ -50,6 +49,8 @@ class GeoLifePreprocessor():
             self._combine_rasters(is_train=(purpose == "train"))
             self._get_metadata(is_train=(purpose == "train"))
             self._encode_data(is_train=(purpose == "train"))
+            self._data.replace([np.inf, -np.inf], np.nan, inplace=True)
+            self._data = self._data.fillna(self._data.median())
             if purpose == "train":
                 train = self._data.join(self._rasters)
                 print("Train done")
@@ -57,11 +58,6 @@ class GeoLifePreprocessor():
                 test = self._data.join(self._rasters)
                 print("Test done")
         return train, test
-
-    def get_data(self):
-        if self._data is not None:
-            return self._data 
-        print("Data is not yet processed. Run process_data() and try again.")
 
     def _combine_rasters(self, is_train:bool) -> None:
         """
@@ -101,6 +97,7 @@ class GeoLifePreprocessor():
                 os.path.join(self._base_path, "GLC24_PA_metadata_test.csv"),
                 index_col="surveyId"
             )
+
             return 
         
         self._data = pd.read_csv(
