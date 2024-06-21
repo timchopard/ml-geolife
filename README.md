@@ -1,5 +1,9 @@
 # GeoLifeCLEF 2024
 
+This repository contains the models used for the 2024 GeoLifeClef competition as the team BernIgen (an exceedingly clever name derived from the cities of Bern and Groningen).
+We (ranked 5th in this competition)[https://www.kaggle.com/competitions/geolifeclef-2024/leaderboard].
+
+## Contents
 1. [Data](#data)
    1. [Preprocessor](#preprocessor)
       1. [General Structure](#general-structure)
