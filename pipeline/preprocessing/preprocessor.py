@@ -40,14 +40,17 @@ class GeoLifePreprocessor():
             "EnvironmentalRasters"
         )
 
-    def process_data(self) -> None: 
+    def process_data(self, species_drop: int=100) -> None: 
         """ Loads in and processes the data for both test and train datasets
         """
         train = None 
         test = None
         for purpose in ["train", "test"]:
             self._combine_rasters(is_train=(purpose == "train"))
-            self._get_metadata(is_train=(purpose == "train"))
+            self._get_metadata(
+                is_train=(purpose == "train"), 
+                species_drop=species_drop
+            )
             self._encode_data(is_train=(purpose == "train"))
             self._data.replace([np.inf, -np.inf], np.nan, inplace=True)
             self._data = self._data.fillna(self._data.median())
