@@ -1,162 +1,93 @@
 # GeoLifeCLEF 2024
 
-This repository contains the models used for the 2024 GeoLifeClef competition as the team BernIgen (an exceedingly clever name derived from the cities of Bern and Groningen).
-We [ranked 5th in this competition](https://www.kaggle.com/competitions/geolifeclef-2024/leaderboard).
+This repository contains the models used for the 2024 GeoLifeCLEF competition as the team
+__BernIgen__ (an exceedingly clever name derived from the names of the cities Bern and
+Groningen). Our team ranked 5th in this competition. [^ranking]
 
-## Contents
+#### Contents:
 1. [Data](#data)
-   1. [Preprocessor](#preprocessor)
-      1. [General Structure](#general-structure)
-      1. [Preprocessor Class](#preprocessor-class)
-      1. [Image Preprocessor Class](#imagepreprocessor-class)
-   1. [Postprocessor](#postprocessor)
-   <!-- 1. [Images as numpy](#images-as-numpy-arrays) -->
-1. [Structure](#structure)
-1. [Potential Experiment](#potential-experiments)
-   1. [Data](#data)
-   1. [Models](#models)
-1. [Submissions](#submissions)
+1. [Models](#models)
+1. [Evaluation](#evaluation)
+1. [Results](#abbreviated-results)
 
 ## Data
 
-[kaggle page](https://www.kaggle.com/competitions/geolifeclef-2024)
 
-### General Structure
 
-#### Country
+The data contained a variety of types and sources. [^data] 
 
-Some of the countries have very few entries (~50 out of 1.5e6) and as such can be subsumed by adjacent countries
+- The species-related training data for this study was gathered using two different methods: Presence-Absence (PA) surveys and Presence-Only (PO) occurrences. The different methodolo-
+gies resulted in datasets that differed in both scale and utility. 
+- Besides species data, we had access to spatialized geographic and environmental data, these
+were used as additional input variables.
 
-#### Region
+<p align="center">
+    <img src="visualization.png" alt="PA and PO data occurrence map" width="70%">
+    <br>
+    PA training data (orange), PO data (green) and PA test data (red) plotted by lattitude and longtitude
+</p>
 
-The regions correlate to the map of Biogeographic regions below.
+The code in this repository expexts the following directory structure for data:
 
-![Biogeographic Regions of Europe](regions.png "Biogeographic Regions of Europe. Source: https://en.wikipedia.org/wiki/Steppic_Biogeographic_Region#/media/File:Europe_biogeography_countries_en.svg")
-
-Since some of these regions are also underrepresented in the data, some larger regions have absorbed others.
-
-### Preprocessor
-
-#### `Preprocessor` Class
-
-The preprocessor class found in `./preprocessor.py` loads in the CSV data for the Presence/Absence surveys and performs the following operations:
-
-- Drops unnecessary columns (default set as `['geoUncertaintyInM', 'country']`)
-- _training data only:_ Removes the less common species from the data (default set as top 500 species kept)
-- Generates the elevation data from the longtitude and latitude values
-- _training data only:_ One-hot encodes the species data
-- One-hot encodes the region data
-
-TODO: Currently this leaves the test data with too few columns for some models, due to it containing fewer regions than the training data. This could be fixed.
-
-#### `ImagePreprocessor` Class
-
-The image preprocessor is also found in `./preprocessor.py`. This class loads in the raw images and combines them into four channel (Red, Green, Blue, Infrared) images stored as numpy arrays.
-
-### Postprocessor
-
-The postprocessor takes the generated outputs of a model and converts it into the format used for submissions.
-
-- `process` Can be called to return a dataframe
-- `save` Can instead be called to save the data to csv at a specified path
-  <!-- ### Data Loader -->
-  <!--
-  The data loader is comprised of three classes `CSVLoader`, `ImageLoader` and `DataLoader`, each stored in their respective files as seen in the [file structure](#structure).
-
-The first two load the training and test CSV files and their associated images. `DataLoader` inherits from both classes to feed the data directly to a model. -->
-
-<!-- ### Images as numpy arrays
-
-Running `python imageprocessor.py -d` from the root will convert train and test images into four `.npz` files located in a new directory (`processed_images/`) unless otherwise specified. -->
-
-## Structure
 
 ```
+
 .
-├── archive                      completed processes
-├── processed_images             processed image data
-│   └── ... [Local only]
-├── processed_data               processed tabular data
-│   └── ... [Local only]
-├── data                         raw data
-│   └── ... [Local only]
-├── datamanagement               data manipulation library
-│   ├── csvloader.py
-│   ├── dataloader.py
-│   └── imageloader.py
-├── README.md
-├── scratchpad-darren.ipynb
-└── scratchpad-tim.ipynb
+├── data
+│   ├── _raw
+│   │   └── <As downloaded from kaggle>
+│   └── processed
+...
 ```
 
-## Potential Experiments
+### Preprocessing
 
-### Data
+With the directory structure above the data may be preprocessed by running ```python process_data.py --species <count>``` where ```<count>``` may be replaced by the minimum number of occurrences below which to drop a species ID. If no count is provided it will default to 100.
 
-- [ ] focus on top 100 species
-- [ ] filter rare data
-- [ ] balance data
-- [ ] use bootstrapping
+#### Preprocessing steps
 
-### Models
+The preprocessing initially generates the ```train.pkl``` and ```test.pkl``` files in the ```data/processed/``` directory. These are generated from the train and test metadata. The data is grouped by surveyId, missing values are replaced with median values and the Country, Region and SpeciesId are one-hot encoded. The train.pkl file contains both the attributes and the speciesId labels. 
 
-- [ ] seperate models for images and data
-- [ ] generative adversarial networks (GAN)
-- [ ] Vision Transformers (ViT)
-- [ ] Contrastive Language–Image Pre-training (CLIP)
+Once the metadata is processed, one-dimensional Primary Component Analysis (PCA) is used to reduce the dimensionality of the Environmental Rasters. Here multiple columns comprising rainfall and temperature data over several years are converted into single columns per metric, per month. For example, the rainfall for January 2008, 2009, ..., 2019 is used to generate a single rainfall January column.
+All data prior to 2008 is also dropped as some years had extreme weather events that could have excessively influenced the PCA columns.
 
-### Submissions
 
-| **Ref** | **Model**                                                                                                           | **Kaggle Score** | **Date**   |
-| ------- | ------------------------------------------------------------------------------------------------------------------- | ---------------- | ---------- |
-| 1       | positive_weigh_factor 0.9 (no sentinal)                                                                             | 0.33180          | 2024-05-13 |
-| 2       | 2x resnet18 (no sentinal, seed 113) : 1x XGBoost                                                                    | 0.33272          | 2024-05-13 |
-| 3       | Updated xgb hyperparameters                                                                                         | 0.34329          | 2024-05-15 |
-| 4       | Original XGB and VIT, +5                                                                                            | 0.34224          | 2024-05-15 |
-| 5       | As previous but with +5 to counts                                                                                   | 0.33605          | 2024-05-15 |
-| 6       | XGB with hyperparameters tuned and training only on species with more than 200 occurrences in the engineered data   | 0.33253          | 2024-05-15 |
-| 7       | 1x pre-trained ViT : 3x resnet18 : 1x XGBoost                                                                       | 0.33946          | 2024-05-14 |
-| 8       | 1x our trained ViT : 2x resnet18 : 1x XGBoost                                                                       | 0.33504          | 2024-05-14 |
-| 9       | 2x pre-trained ViT : 2x resnet18 : 1x XGBoost                                                                       | 0.34001          | 2024-05-13 |
-| 10      | 1x pre-trained ViT : 2x resnet18 : 1x XGBoost                                                                       | 0.34132          | 2024-05-13 |
-| 11      | 3:1 50-75nn:xgb                                                                                                     | 0.30289          | 2024-05-13 |
-| 12      | 2x resnet18 (improved normalisation for sentinal images) : 1x XGBoost                                               | 0.33471          | 2024-05-13 |
-| 13      | 3:2 nn50-30:xgb                                                                                                     | 0.32980          | 2024-05-12 |
-| 14      | 3:1 nn50-30:xgb                                                                                                     | 0.33042          | 2024-05-12 |
-| 15      | 5:1 nn50-30:xgb                                                                                                     | 0.32619          | 2024-05-12 |
-| 16      | 2x resnet18 (no sentinal) : 1x XGBoost                                                                              | 0.33345          | 2024-05-11 |
-| 17      | pure resnet50 - 30 epochs                                                                                           | 0.30198          | 2024-05-10 |
-| 18      | 2x resnet18 : 1x XGBoost                                                                                            | 0.33350          | 2024-05-10 |
-| 19      | AS before 2:1 weighting nn:xgb                                                                                      | 0.33103          | 2024-05-08 |
-| 20      | 50-30, as before                                                                                                    | 0.32578          | 2024-05-08 |
-| 21      | As before with 34, 20 epochs                                                                                        | 0.32355          | 2024-05-07 |
-| 22      | As before, but using resnet34 instead of resnet18                                                                   | 0.28453          | 2024-05-07 |
-| 23      | NN + previous (1:1)                                                                                                 | 0.32251          | 2024-05-07 |
-| 24      | Ensemble Weighted counts (<0.15:1> country to xgb count model) Weighted predictions (<1.25:1> core data to landsat) | 0.28861          | 2024-05-07 |
-| 25      | top 20 landsat + xgb + pca                                                                                          | 0.28269          | 2024-05-06 |
-| 26      | xgb dynamic 7                                                                                                       | 0.23881          | 2024-05-05 |
-| 27      | xgb dynamic 5                                                                                                       | 0.23855          | 2024-05-05 |
-| 28      | uploadable_2024-05-03_16-47                                                                                         | 0.23855          | 2024-05-03 |
-| 29      | from 2010, dynamic, +5                                                                                              | 0.17199          | 2024-05-03 |
-| 30      | Full dataset, dynamic + 5                                                                                           | 0.25071          | 2024-05-02 |
-| 31      | uploadable_2024-05-02_16-10                                                                                         | 0.23168          | 2024-05-02 |
-| 32      | dynamic n, xgboost                                                                                                  | 0.23517          | 2024-05-02 |
-| 33      | uploadable_2024-05-01_16-45                                                                                         | 0.23851          | 2024-05-01 |
-| 34      | uploadable_2024-05-01_16-44                                                                                         | 0.24070          | 2024-05-01 |
-| 35      | uploadable_2024-05-01_16-40                                                                                         | 0.24019          | 2024-05-01 |
-| 36      | uploadable_EnsembleXGB                                                                                              | 0.11286          | 2024-04-24 |
-| 37      | nearest neighbour                                                                                                   | 0.19451          | 2024-04-22 |
-| 38      | tree                                                                                                                | 0.12993          | 2024-04-19 |
-| 39      | Basic Decision Tree - Top 500                                                                                       | 0.18229          | 2024-04-11 |
+## Models
 
-#### Comparisions
+Three main models are used. 
+1. A Multimodal Model that makes use of ResNet18[^resnet] and Swin_T[^swint]
+1. An XGBoost Regression[^xgb] model trained on the preprocessed data using species as labels
+1. An XGBoost Regression[^xgb] model trained using species counts as labels 
 
-##### Positive Weight Factor
+The outputs of models 1 and 2 consist of matrices of psuedo-probabilities for each species. These psuedo-probabilities are then
+weighted _m_:_x_, where _m_ is the multimodal output weight and _x_ is the xgboost output weight. These weighted outputs are combined and then the top _n_+_k_ species are selected based on the species count prediction from model 3. Here _k_ represents a weighting factor applied to the count prediction.
 
-Tested on 2x resnet18 (no sentinal) : 1x XGBoost
+## Evaluation
 
-| **Positive Weight Factor** | **Kaggle Score** |
-| -------------------------- | ---------------- |
-| 0.9                        | 0.33180          |
-| 1.0                        | 0.33345          |
-| 1.1                        | 0.?              |
+A micro f1 score was used as the evaluation metric for this project:
+
+$$  \text{F1}_{micro} = \frac{1}{N}\sum_{i=1}^N\frac{2 \cdot \text{TP}_i}{2 \cdot \text{TP}_i + \text{FP}_i + \text{FN}_i}$$
+
+Where $\text{TP}$ refers to true positives, $\text{FP}$ refers to false positives and $\text{FN}$ refers to false negatives. 
+
+
+## Abbreviated Results
+
+Some key results from this approach are the following:
+
+| Model          | _k_ = 3| _k_ = 3.5| _k_ = 4 |
+|----------------|---------|---------|---------|
+| XGB Regression | __0.32234__ | 0.32217 | 0.32233 |
+| Multimodal     | 0.32664 | 0.32721 | __0.32762__ |
+| Ensemble 1:1   | __0.34378__ | 0.34323 | 0.34329 |
+| Ensemble 5:4   | 0.34396 | __0.34407__ | 0.34402 |
+_Best score per model in bold_
+
+
+
+
+[^ranking]: [GeoLifeCLEF 2024 Scoreboard on kaggle.](https://www.kaggle.com/competitions/geolifeclef-2024/leaderboard)
+[^data]: [The data as well as descriptions of the various types and sources](https://www.kaggle.com/competitions/geolifeclef-2024/data)
+[^resnet]: [ResNet18 with PyTorch](https://pytorch.org/vision/master/models/generated/torchvision.models.resnet18.html)
+[^swint]: [Swin_T with PyTorch](https://pytorch.org/vision/main/models/generated/torchvision.models.swin_t.html)
+[^xgb]: [XGB Regressor](https://xgboost.readthedocs.io/en/stable/python/python_api.html#module-xgboost.sklearn)
