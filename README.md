@@ -81,6 +81,7 @@ Some key results from this approach are the following:
 | Multimodal     | 0.32664 | 0.32721 | __0.32762__ |
 | Ensemble 1:1   | __0.34378__ | 0.34323 | 0.34329 |
 | Ensemble 5:4   | 0.34396 | __0.34407__ | 0.34402 |
+
 _Best score per model in bold_
 
 

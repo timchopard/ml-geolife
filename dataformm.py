@@ -16,12 +16,16 @@ class TestDataset(Dataset):
         self.transform = transform
 
     def __len__(self):
-        return self.pca.shape[0]
+        return self.pca_data.shape[0]
 
     def __getitem__(self, idx):
         survey_id = self.pca_data.index[idx]
-        image_data = self.process_patch(survey_id)
-        sample = [self.pca_data.iloc[idx].tolist(), image_data, self.landsat_data[idx]]
+        # image_data = self.process_patch(survey_id)
+        sample = [
+            self.pca_data.iloc[idx].tolist(), 
+            # image_data, 
+            self.landsat_data[idx]
+        ]
         return sample, survey_id
 
     def process_patch(self, survey_id):
@@ -58,11 +62,11 @@ class TrainDataset(TestDataset):
 
     def __getitem__(self, idx):
         survey_id = self.pca_data.index[idx]
-        image_data = self.process_patch(survey_id)
+        # image_data = self.process_patch(survey_id)
 
         sample = [
             torch.tensor(self.pca_data.iloc[idx].tolist(), dtype=torch.float32),
-            torch.tensor(image_data, dtype=torch.float32),
+            # torch.tensor(image_data, dtype=torch.float32),
             torch.tensor(self.landsat_data[idx], dtype=torch.float32),
         ]
         return (

@@ -2,6 +2,7 @@ import pandas as pd
 from sklearn.decomposition import PCA
 from numpy import inf, nan, float32, float64
 from warnings import simplefilter
+
 simplefilter(action="ignore", category=pd.errors.PerformanceWarning)
 
 class GeoLifePCA():

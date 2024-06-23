@@ -1,15 +1,42 @@
 \section{Method}
 
-In order to manage the multilabel classification required for this research we implemented an ensemble approach.
-This section details the individual architectures and the methods used to combine them.
+In order to manage the multilabel classification required for this research we implemented three main approaches as well as ensemble combinations of each approach.
+This section details the data preprocessing as well as the individual architectures and the methods used to combine them.
+
+\subsection{Preprocessing}
+
+The Prsence-Absence Metadata, Environmental rasters and Time-Series Satellite data were preprocessed.
+
+\begin{figure}\label{fig:preproc}
+    \begin{center}
+        \input{figs/pca-diagram.tex}
+        \caption{Preprocessing the data for use in the count prediction and XGBoost pseudo-probability models}
+    \end{center}
+\end{figure}
+
+\subsubsection{Dimensionality Reduction with Principal Component Analysis}
+Principal Component Analysis (PCA) is a method for reducing dimensionality~\cite{pcapaper}. 
+It functions by projecting the high dimensional data onto the direction of maximum variance, thus retaining key features and reducing noise.
+
+We applied PCA to much of the Time Series data within the Environmental Rasters. Each month in a given class 
+
+
+\subsubsection{Missing and infinite values}
+
+
+\subsubsection{Low-Value Data Removal}
+
+% The raw data included some missing, or infinite values that needed to be processed prior to model fitting. When a column was both deemed important to model fitting and contained such values, these values were replaced by the mean so as to avoid excessive influence from outliers without overly effecting the shape of the data~\cite{missingmedian}.
+% 
+% \textbf{TODO: Further explanation when models finalized}
+
+% The Metadata and Bioclimatic Rasters were preprocessed for use in the count and XGBoost models in order to both reduce dimensionality and remove potential noise.
 
 \subsection{Architectures}
 
 The core architectures used in this project were 18 layer ResNet, XGBoost and [TRANSFORMER]. The outputs of these were
 then weighted and combined before the maximum arguments were selected.
 
-\subsubsection{Principal Component Analysis}
-Principal Component Analysis (PCA) is a method for reducing dimensionality~\cite{pcapaper}. It functions by projecting the high dimensional data onto the direction of maximum variance, thus retaining key features and reducing noise.
 
 
 
@@ -26,13 +53,6 @@ Often ViT-based models are often developed for large high resolution imagery. Th
 
 \subsection{Process}
 
-\subsubsection{Preprocessing}
-
-The raw data included some missing, or infinite values that needed to be processed prior to model fitting. When a column was both deemed important to model fitting and contained such values, these values were replaced by the mean so as to avoid excessive influence from outliers without overly effecting the shape of the data~\cite{missingmedian}.
-
-\textbf{TODO: Further explanation when models finalized}
-
-The Metadata and Bioclimatic Rasters were preprocessed for use in the count and XGBoost models in order to both reduce dimensionality and remove potential noise.
 
 
 
@@ -40,12 +60,6 @@ The Metadata and Bioclimatic Rasters were preprocessed for use in the count and 
 In addition, the number of viable output species was reduced from 11255 (the total species present accross all data) down to 1141 (the total species with more than 100 occurrences in the presence/absence data). 
 This reduction served to remove several edge cases and focus the models more on likelier species.
 
-\begin{figure}\label{fig:preproc}
-    \begin{center}
-        \input{figs/pca-diagram.tex}
-        \caption{Preprocessing the data for use in the count prediction and XGBoost pseudo-probability models}
-    \end{center}
-\end{figure}
 
 
 
