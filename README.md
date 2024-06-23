@@ -66,7 +66,7 @@ weighted _m_:_x_, where _m_ is the multimodal output weight and _x_ is the xgboo
 
 A micro f1 score was used as the evaluation metric for this project:
 
-$$  \text{F1}_{micro} = \frac{1}{N}\sum_{i=1}^N\frac{2 \cdot \text{TP}_i}{2 \cdot \text{TP}_i + \text{FP}_i + \text{FN}_i}$$
+$  \text{F1}_{micro} = \frac{1}{N}\sum_{i=1}^N\frac{2 \cdot \text{TP}_i}{2 \cdot \text{TP}_i + \text{FP}_i + \text{FN}_i}$
 
 Where $\text{TP}$ refers to true positives, $\text{FP}$ refers to false positives and $\text{FN}$ refers to false negatives. 
 
